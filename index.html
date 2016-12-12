@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>State-threads by ossrs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">State-threads</h1>
+      <h2 class="project-tagline">Fork from http://sourceforge.net/projects/state-threads, patched for SRS.</h2>
+      <a href="https://github.com/ossrs/state-threads" class="btn">View on GitHub</a>
+      <a href="https://github.com/ossrs/state-threads/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/ossrs/state-threads/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="state-threads" class="anchor" href="#state-threads" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>state-threads</h1>
+
+<p>Fork from <a href="http://sourceforge.net/projects/state-threads">http://sourceforge.net/projects/state-threads</a>, patched for <a href="https://github.com/ossrs/srs/tree/2.0release">SRS</a>.</p>
+
+<blockquote>
+<p>See: <a href="https://github.com/ossrs/state-threads/blob/srs/README">https://github.com/ossrs/state-threads/blob/srs/README</a></p>
+</blockquote>
+
+<h2>
+<a id="branch-srs" class="anchor" href="#branch-srs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Branch SRS</h2>
+
+<p>The branch <a href="https://github.com/ossrs/state-threads/tree/srs">srs</a> will be patched the following patches:</p>
+
+<ul>
+<li>[x] Patch <a href="https://github.com/ossrs/srs/blob/2.0release/trunk/3rdparty/patches/1.st.arm.patch">st.arm.patch</a>, for ARM.</li>
+<li>[x] Patch <a href="https://github.com/ossrs/srs/blob/2.0release/trunk/3rdparty/patches/3.st.osx.kqueue.patch">st.osx.kqueue.patch</a>, for osx.</li>
+<li>[x] Patch <a href="https://github.com/ossrs/srs/blob/2.0release/trunk/3rdparty/patches/4.st.disable.examples.patch">st.disable.examples.patch</a>, for ubuntu.</li>
+<li>[x] <a href="https://github.com/ossrs/state-threads/compare/c2001d30ca58f55d72a6cc6b9b6c70391eaf14db...d2101b26988b0e0db0aabc53ddf452068c1e2cbc">Refine TAB of code</a>.</li>
+<li>[x] Merge from <a href="https://github.com/michaeltalyansky/state-threads">michaeltalyansky</a> and <a href="https://github.com/ossrs/state-threads/commit/9a17dec8f9c2814d93761665df7c5575a4d2d8a3">xzh3836598</a>, support <a href="https://github.com/ossrs/state-threads/issues/1">ARM</a>.</li>
+<li>[x] Merge from <a href="https://github.com/toffaletti/state-threads">toffaletti</a>, support <a href="https://github.com/ossrs/state-threads/issues/2">valgrind</a> for ST.</li>
+</ul>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>For Linux:</p>
+
+<pre><code>make linux-debug EXTRA_CFLAGS="-DMD_HAVE_EPOLL"
+</code></pre>
+
+<p>For OSX:</p>
+
+<pre><code>make darwin-debug EXTRA_CFLAGS="-DMD_HAVE_KQUEUE"
+</code></pre>
+
+<p>Linux with valgrind:</p>
+
+<pre><code>make linux-debug EXTRA_CFLAGS="-DMD_VALGRIND"
+</code></pre>
+
+<blockquote>
+<p>Remark: User must install valgrind, for instance, in centos6 <code>sudo yum install -y valgrind valgrind-devel</code>.</p>
+</blockquote>
+
+<p>Linux with valgrind and epoll:</p>
+
+<pre><code>make linux-debug EXTRA_CFLAGS="-DMD_HAVE_EPOLL -DMD_VALGRIND"
+</code></pre>
+
+<p>For OSX, user must specifies the valgrind header files:</p>
+
+<pre><code>make darwin-debug EXTRA_CFLAGS="-DMD_VALGRIND -I/usr/local/include"
+</code></pre>
+
+<h2>
+<a id="valgrind" class="anchor" href="#valgrind" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Valgrind</h2>
+
+<p>How to debug with gdb under valgrind, read <a href="http://valgrind.org/docs/manual/manual-core-adv.html#manual-core-adv.gdbserver-simple">valgrind manual</a>.</p>
+
+<p>About startup parameters, read <a href="http://valgrind.org/docs/manual/mc-manual.html#mc-manual.options">valgrind cli</a>.</p>
+
+<p>Important cli options:</p>
+
+<ol>
+<li>
+<code>--undef-value-errors=&lt;yes|no&gt; [default: yes]</code>, Controls whether Memcheck reports uses of undefined value errors. Set this to no if you don't want to see undefined value errors. It also has the side effect of speeding up Memcheck somewhat.</li>
+<li>
+<code>--leak-check=&lt;no|summary|yes|full&gt; [default: summary]</code>, When enabled, search for memory leaks when the client program finishes. If set to summary, it says how many leaks occurred. If set to full or yes, each individual leak will be shown in detail and/or counted as an error, as specified by the options <code>--show-leak-kinds</code> and <code>--errors-for-leak-kinds</code>.</li>
+<li>
+<code>--track-origins=&lt;yes|no&gt; [default: no]</code>, Controls whether Memcheck tracks the origin of uninitialised values. By default, it does not, which means that although it can tell you that an uninitialised value is being used in a dangerous way, it cannot tell you where the uninitialised value came from. This often makes it difficult to track down the root problem.</li>
+<li>
+<code>--show-reachable=&lt;yes|no&gt; , --show-possibly-lost=&lt;yes|no&gt;</code>, to show the using memory.</li>
+</ol>
+
+<p>Winlin 2016</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/ossrs/state-threads">State-threads</a> is maintained by <a href="https://github.com/ossrs">ossrs</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
