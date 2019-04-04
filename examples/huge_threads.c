@@ -14,12 +14,20 @@
 void* do_calc(void* arg){
     long pidx = *(long*)arg;
     printf("sthread [#%ld] start\n", pidx);
-    for(;;){
-        printf("sthread [#%ld] usleep\n", pidx);
+    for(int i = 0; i < 200; i++){
         st_usleep(SLEEP_INTERVAL * 1000);
+        printf("sthread [#%ld] %d usleep\n", pidx, i);
     }
+    printf("exit_%ld\n", pidx);
+    st_thread_exit("exit ");
     return NULL;
 }
+
+int calc(int a, int b)
+{
+
+}
+
 void* thread_func(void* name)
 {
     if(st_init() < 0){
@@ -28,15 +36,20 @@ void* thread_func(void* name)
     }
  
     long i, count = atoi((const char*)name);
+    st_thread_t stid = NULL;
     for(i = 1; i <= count; i++){
-        if(st_thread_create(do_calc, (void*)&i, 0, 0) == NULL){
+        if((stid = st_thread_create(do_calc, (void*)&i, 1, 0)) == NULL){
             printf("create state thread %d failed\n", i);
             return NULL;
         }
         // 由于协成启动较慢，外部变了 i 已经变了，do_calc才执行
         st_usleep(SLEEP_INTERVAL * 10000);
+        printf("st_usleep for after %p\n", stid);
     }
-    st_thread_exit(NULL);
+    void *p;
+    st_thread_join(stid, &p);
+    printf("last stid=%p return \"%s\"\n", (char *)p, stid);
+
 } 
 
 int main(int argc, char** argv){
@@ -49,6 +62,7 @@ int main(int argc, char** argv){
     pthread_t tid;
     pthread_create(&tid, NULL, thread_func, argv[1]);
     pthread_join(tid, NULL);
+    printf("calc not return statement, default is %d\n", calc(1,2));
  
     return 0;
 }
